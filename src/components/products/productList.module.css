@@ -20,10 +20,10 @@
   font-family: "Inter", sans-serif;
   font-size: 14px;
   font-weight: 600;
-  background: #9878cb;
+  background: #f1f1f1;
   padding: 11px 18px;
-  border-radius: 3vh;
-  color: #ffffff;
+  border-radius: 30px;
+  color: #333333;
   border-style: none;
   cursor: pointer;
   margin-top: 8px;
@@ -37,6 +37,7 @@
   transition: 0.3s;
   padding: 11px 18px;
   background: #333333;
+  color: #f1f1f1;
   border-style: none;
 }
 
@@ -97,6 +98,9 @@
 .form_group input,
 .form_group textarea,
 .form_group select {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
   padding: 8px;
   border: 2px solid #ddd;
   border-radius: 20px;
@@ -113,7 +117,7 @@
 .form_group input:focus,
 .form_group textarea:focus,
 .form_group select:focus {
-  border: 2px solid #9878cb;
+  border: 2px solid #333333;
   transition: 0.3s;
 }
 
@@ -141,7 +145,7 @@
   font-family: "Inter", sans-serif;
   font-size: 14px;
   font-weight: 600;
-  padding: 10px 15px;
+  padding: 11px 18px;
   border: none;
   border-radius: 30px;
   cursor: pointer;
@@ -154,18 +158,20 @@
 }
 
 .cancel_button:hover {
-  color: #9878cb;
+  background-color: #333333;
+  color: #f1f1f1;
   transition: 0.3s;
 }
 
 .submit_button {
-  background-color: #9878cb;
-  color: white;
+  background-color: #f1f1f1;
+  color: #333333;
   transition: 0.3s;
 }
 
 .submit_button:hover {
   background-color: #333333;
+  color: #f1f1f1;
   transition: 0.3s;
 }
 

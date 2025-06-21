@@ -38,7 +38,7 @@
 }
 
 .product_textarea:focus {
-  border: 2px solid #9878cb;
+  border: 2px solid #333333;
   transition: 0.3s;
 }
 
@@ -65,7 +65,7 @@
 }
 
 .product_textarea_description:focus {
-  border: 2px solid #9878cb;
+  border: 2px solid #333333;
   transition: 0.3s;
 }
 
@@ -73,10 +73,10 @@
   font-family: "Inter", sans-serif;
   font-size: 14px;
   font-weight: 600;
-  background: #9878cb;
+  background: #f1f1f1;
   padding: 11px 18px;
   border-radius: 3vh;
-  color: #ffffff;
+  color: #333333;
   border-style: none;
   cursor: pointer;
   margin-top: 8px;
@@ -90,6 +90,7 @@
   transition: 0.3s;
   padding: 11px 18px;
   background: #333333;
+  color: #ffffff;
   border-style: none;
 }
 

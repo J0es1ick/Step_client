@@ -1,5 +1,5 @@
 import React from "react";
-import { Product } from "./productList";
+import { Product, ProductUpdate } from "./productList";
 import styles from "./productItem.module.css";
 
 interface IProps {
@@ -9,17 +9,7 @@ interface IProps {
   onError?: (error: string) => void;
 }
 
-interface ProductUpdateData {
-  product_id: number;
-  name: string;
-  description: string;
-  current_price: number;
-  brand_id?: number;
-  category_id?: number;
-  supplier_id?: number;
-}
-
-const updateProduct = async (product: ProductUpdateData): Promise<Product> => {
+const updateProduct = async (product: ProductUpdate): Promise<Product> => {
   const method = product.product_id !== 0 ? "PATCH" : "POST";
   const url =
     product.product_id !== 0
@@ -71,9 +61,9 @@ export default function ProductItem({
         name,
         description,
         current_price: parseFloat(price),
-        brand_id: brandId ? parseInt(brandId) : undefined,
-        category_id: categoryId ? parseInt(categoryId) : undefined,
-        supplier_id: supplierId ? parseInt(supplierId) : undefined,
+        brand_id: brandId ? parseInt(brandId) : null,
+        category_id: categoryId ? parseInt(categoryId) : null,
+        supplier_id: supplierId ? parseInt(supplierId) : null,
       });
       onUpdate?.(updatedProduct);
     } catch (error) {

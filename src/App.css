@@ -1,16 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Inter:wght@100..900&display=swap");
 
-body {
-  background: linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(240, 231, 255, 1) 50%,
-    rgba(186, 156, 233, 1) 100%
-  );
-  background-repeat: no-repeat;
-  background-size: 100vw 45vh;
-}
-
 * {
   margin: 0;
   padding: 0;

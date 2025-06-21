@@ -19,6 +19,16 @@ export interface Product {
   sizes?: Size[];
 }
 
+export interface ProductUpdate {
+  product_id?: number;
+  name: string;
+  description: string;
+  current_price: number;
+  brand_id: number | null;
+  category_id: number | null;
+  supplier_id: number | null;
+}
+
 interface Size {
   product_id: number;
   size: string;
@@ -90,18 +100,6 @@ const getSuppliers = async (
   return await response.json();
 };
 
-const createProduct = async (product: Omit<Product, "product_id">) => {
-  const response = await fetch("/api/products", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(product),
-  });
-  if (!response.ok) throw new Error("Failed to create product");
-  return await response.json();
-};
-
 export default function ProductList() {
   const [products, setProducts] = React.useState<Product[]>([]);
   const [brands, setBrands] = React.useState<Brand[]>([]);
@@ -120,15 +118,13 @@ export default function ProductList() {
     {}
   );
 
-  const [newProduct, setNewProduct] = React.useState<
-    Omit<Product, "product_id">
-  >({
+  const [newProduct, setNewProduct] = React.useState<ProductUpdate>({
     name: "",
     description: "",
     current_price: 0,
-    brand: undefined,
-    category: undefined,
-    supplier: undefined,
+    brand_id: null,
+    category_id: null,
+    supplier_id: null,
   });
 
   const fetchProducts = async () => {
@@ -240,31 +236,53 @@ export default function ProductList() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
-      const createdProduct = await createProduct(newProduct);
+      const productData = {
+        name: newProduct.name,
+        description: newProduct.description,
+        current_price: newProduct.current_price,
+        brand_id: newProduct.brand_id,
+        category_id: newProduct.category_id,
+        supplier_id: newProduct.supplier_id,
+      };
 
-      setProducts((prev) => [...prev, createdProduct]);
+      const response = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create product");
+      }
+
+      const createdProduct = await response.json();
+
+      setProducts((prev) => [createdProduct, ...prev]);
       setModalIsOpen(false);
       setNewProduct({
         name: "",
         description: "",
         current_price: 0,
-        brand: undefined,
-        category: undefined,
-        supplier: undefined,
+        brand_id: null,
+        category_id: null,
+        supplier_id: null,
       });
 
       setSuccessMessage("Продукт успешно создан!");
       setTimeout(() => setSuccessMessage(null), 3000);
       await fetchProducts();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create product");
-      setTimeout(() => setError(null), 3000);
+      const errorMessage =
+        err instanceof Error ? err.message : "Произошла неизвестная ошибка";
+      setError(errorMessage);
+      setTimeout(() => setError(null), 5000);
     } finally {
       setIsSubmitting(false);
     }
@@ -287,11 +305,21 @@ export default function ProductList() {
     }
   };
 
-  const handleSelectChange = (name: string, value: number) => {
+  const handleSelectChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+
     setNewProduct((prev) => ({
       ...prev,
-      [name]: { [`${name}_id`]: value },
+      [name]: name === "current_price" ? Number(value) : value,
     }));
+
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   return (
@@ -362,11 +390,6 @@ export default function ProductList() {
               value={newProduct.description}
               onChange={handleInputChange}
             />
-            {formErrors.description && (
-              <span className={styles.error_text}>
-                {formErrors.description}
-              </span>
-            )}
           </div>
           <div
             className={`${styles.form_group} ${
@@ -393,11 +416,9 @@ export default function ProductList() {
             <label htmlFor="brand">Бренд</label>
             <select
               id="brand"
-              name="brand"
-              value={newProduct.brand?.brand_id || ""}
-              onChange={(e) =>
-                handleSelectChange("brand", Number(e.target.value))
-              }
+              name="brand_id"
+              value={newProduct.brand_id || ""}
+              onChange={handleSelectChange}
             >
               <option value="">Выберите бренд</option>
               {brands.map((brand) => (
@@ -411,11 +432,9 @@ export default function ProductList() {
             <label htmlFor="category">Категория</label>
             <select
               id="category"
-              name="category"
-              value={newProduct.category?.category_id || ""}
-              onChange={(e) =>
-                handleSelectChange("category", Number(e.target.value))
-              }
+              name="category_id"
+              value={newProduct.category_id || ""}
+              onChange={handleSelectChange}
             >
               <option value="">Выберите категорию</option>
               {categories.map((category) => (
@@ -429,11 +448,9 @@ export default function ProductList() {
             <label htmlFor="supplier">Поставщик</label>
             <select
               id="supplier"
-              name="supplier"
-              value={newProduct.supplier?.supplier_id || ""}
-              onChange={(e) =>
-                handleSelectChange("supplier", Number(e.target.value))
-              }
+              name="supplier_id"
+              value={newProduct.supplier_id || ""}
+              onChange={handleSelectChange}
             >
               <option value="">Выберите поставщика</option>
               {suppliers.map((supplier) => (
