@@ -34,6 +34,14 @@ export default function SupplierList() {
   const [totalSuppliers, setTotalSuppliers] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [modalIsOpen, setModalIsOpen] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(
+    null
+  );
+  const [formErrors, setFormErrors] = React.useState<Record<string, string>>(
+    {}
+  );
 
   const fetchSuppliers = async () => {
     setLoading(true);

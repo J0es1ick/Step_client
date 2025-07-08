@@ -44,7 +44,7 @@ const customStyles: ReactModal.Styles = {
     transform: "translate(-50%, -50%)",
     width: "1000px",
     maxWidth: "90%",
-    height: "500px",
+    height: "720px",
     maxHeight: "90%",
     padding: "20px",
     borderRadius: "40px",
@@ -52,6 +52,7 @@ const customStyles: ReactModal.Styles = {
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     background: "#fff",
     fontFamily: '"Inter", sans-serif',
+    scrollbarWidth: "none",
   },
   overlay: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -497,10 +498,23 @@ export default function ProductList() {
       ) : (
         <>
           <div>
+            <div className={styles.option_names}>
+              <button>ID</button>
+              <button>Название</button>
+              <button>Описание</button>
+              <button>Цена</button>
+              <button>Бренд</button>
+              <button>Категория</button>
+              <button>Поставщик</button>
+              <button>Действия</button>
+            </div>
             {products.map((product) => (
               <ProductItem
                 key={product.product_id}
                 product={product}
+                brands={brands}
+                categories={categories}
+                suppliers={suppliers}
                 onUpdate={updateProduct}
                 onDelete={deleteProduct}
                 onError={errorProduct}

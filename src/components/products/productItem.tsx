@@ -1,9 +1,15 @@
 import React from "react";
 import { Product, ProductUpdate } from "./productList";
 import styles from "./productItem.module.css";
+import { Brand } from "../brands/brandList";
+import { Category } from "../categories/categoryList";
+import { Supplier } from "../suppliers/supplierList";
 
 interface IProps {
   product: Product;
+  brands: Brand[];
+  categories: Category[];
+  suppliers: Supplier[];
   onUpdate?: (updatedProduct: Product) => void;
   onDelete?: (productId: number) => void;
   onError?: (error: string) => void;
@@ -35,6 +41,9 @@ const updateProduct = async (product: ProductUpdate): Promise<Product> => {
 
 export default function ProductItem({
   product,
+  brands,
+  categories,
+  suppliers,
   onUpdate,
   onDelete,
   onError,
@@ -92,22 +101,22 @@ export default function ProductItem({
     }
   };
 
-  const handleBrandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setBrandId(e.target.value);
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCategoryId(e.target.value);
   };
 
-  const handleSupplierChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSupplierChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSupplierId(e.target.value);
   };
 
   return (
-    <div className={styles.product_item}>
-      <div>
-        <label htmlFor="product_name">Название: </label>
+    <div>
+      <div className={styles.product_item}>
+        <h1>{product.product_id}</h1>
         <input
           type="text"
           id="product_name"
@@ -115,19 +124,12 @@ export default function ProductItem({
           onChange={(e) => setName(e.target.value)}
           className={styles.product_textarea}
         />
-      </div>
-      <div>
-        <label htmlFor="product_description">Описание: </label>
-        <input
-          type="text"
+        <textarea
           id="product_description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className={styles.product_textarea_description}
         />
-      </div>
-      <div>
-        <label htmlFor="product_price">Цена: </label>
         <input
           type="number"
           id="product_price"
@@ -137,61 +139,56 @@ export default function ProductItem({
           min="0"
           step="0.01"
         />
-      </div>
-      <div>
-        <label htmlFor="product_brand">Бренд ID: </label>
-        <input
-          type="number"
-          id="product_brand"
-          value={brandId || ""}
+        <select
+          id="brand"
+          value={brandId}
           onChange={handleBrandChange}
-          className={styles.product_textarea}
-          min="1"
-        />
-      </div>
-      <div>
-        <label htmlFor="product_category">Категория ID: </label>
-        <input
-          type="number"
-          id="product_category"
-          value={categoryId || ""}
+          className={styles.product_select}
+        >
+          <option value="">Выберите бренд</option>
+          {brands.map((brand) => (
+            <option key={brand.brand_id} value={brand.brand_id}>
+              {brand.brand_name}
+            </option>
+          ))}
+        </select>
+        <select
+          id="category"
+          value={categoryId}
           onChange={handleCategoryChange}
-          className={styles.product_textarea}
-          min="1"
-        />
-      </div>
-      <div>
-        <label htmlFor="product_supplier">Поставщик ID: </label>
-        <input
-          type="number"
-          id="product_supplier"
-          value={supplierId || ""}
+          className={styles.product_select}
+        >
+          <option value="">Выберите категорию</option>
+          {categories.map((category) => (
+            <option key={category.category_id} value={category.category_id}>
+              {category.category_name}
+            </option>
+          ))}
+        </select>
+        <select
+          id="supplier"
+          value={supplierId}
           onChange={handleSupplierChange}
-          className={styles.product_textarea}
-          min="1"
-        />
-      </div>
-      {product.sizes && product.sizes.length > 0 ? (
-        <div className={styles.sizes}>
-          <h4>Размеры:</h4>
-          <ul>
-            {product.sizes.map((size) => (
-              <li>
-                Размер: {size.size} (ID: {size.product_id})
-              </li>
-            ))}
-          </ul>
+          className={styles.product_select}
+        >
+          <option value="">Выберите поставщика</option>
+          {suppliers.map((supplier) => (
+            <option key={supplier.supplier_id} value={supplier.supplier_id}>
+              {supplier.supplier_name}
+            </option>
+          ))}
+        </select>
+        <div className={styles.product_buttons}>
+          <button className={styles.product_button_save} onClick={handleSubmit}>
+            Сохранить
+          </button>
+          <button
+            className={styles.product_button_delete}
+            onClick={handleDelete}
+          >
+            Удалить
+          </button>
         </div>
-      ) : (
-        <p className={styles.noSizes}>Нет доступных размеров</p>
-      )}
-      <div className={styles.product_buttons}>
-        <button className={styles.product_button} onClick={handleSubmit}>
-          Сохранить
-        </button>
-        <button className={styles.product_button} onClick={handleDelete}>
-          Удалить
-        </button>
       </div>
     </div>
   );

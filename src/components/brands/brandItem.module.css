@@ -33,7 +33,7 @@
 }
 
 .brand_textarea:focus {
-  border: 2px solid #9878cb;
+  border: 2px solid #333333;
   transition: 0.3s;
 }
 

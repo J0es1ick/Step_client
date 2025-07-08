@@ -1,103 +1,97 @@
 .product_item {
   border-bottom: 2px solid #e4e4e4;
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding: 10px 15px;
+  display: grid;
+  grid-template-columns:
+    5% /* ID */
+    17% /* Название */
+    17% /* Описание */
+    10% /* Цена */
+    10% /* Бренд */
+    11% /* Категория */
+    12% /* Поставщик */
+    20%; /* Кнопки */
+  align-items: center;
 }
 
-.product_item label {
-  font-family: "Inter", serif;
+.product_item h1 {
+  font-family: "Inter", sans-serif;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
+  margin: 0;
+  padding-left: 15px;
 }
 
-.product_id_label {
-  margin-top: 5px;
-  margin-bottom: 10px;
-}
-
-.product_textarea {
-  width: 20%;
+.product_textarea,
+.product_textarea_description,
+.product_select {
   height: 30px;
-  border-radius: 60px;
+  border-radius: 10px;
   border: 2px solid #ffffff;
   outline: none;
-  padding: 15px;
-  font-family: "Inter", serif;
+  padding: 0 15px;
+  font-family: "Inter", sans-serif;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 15px;
   transition: 0.3s;
-}
-
-.product_textarea::placeholder {
-  font-family: "Inter", serif;
-  font-weight: 700;
-  font-size: 18px;
-  margin-left: 15px;
-  margin-right: 15px;
-  color: #000000;
-}
-
-.product_textarea:focus {
-  border: 2px solid #333333;
-  transition: 0.3s;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .product_textarea_description {
-  width: 50%;
-  height: 30px;
-  border-radius: 60px;
-  border: 2px solid #ffffff;
-  outline: none;
-  padding: 15px;
-  font-family: "Inter", serif;
-  font-weight: 700;
-  font-size: 18px;
-  transition: 0.3s;
+  min-height: 60px;
+  border-radius: 30px;
+  padding: 5px 15px;
+  resize: vertical;
 }
 
-.product_textarea_description::placeholder {
-  font-family: "Inter", serif;
-  font-weight: 700;
-  font-size: 18px;
-  margin-left: 15px;
-  margin-right: 15px;
-  color: #000000;
-}
-
-.product_textarea_description:focus {
+.product_textarea:focus,
+.product_textarea_description:focus,
+.product_select:focus {
   border: 2px solid #333333;
-  transition: 0.3s;
 }
 
-.product_button {
+.product_button_save,
+.product_button_delete {
   font-family: "Inter", sans-serif;
-  font-size: 14px;
   font-weight: 600;
-  background: #f1f1f1;
-  padding: 11px 18px;
-  border-radius: 3vh;
-  color: #333333;
   border-style: none;
   cursor: pointer;
-  margin-top: 8px;
   transition: 0.3s;
   white-space: nowrap;
   display: flex;
   align-items: center;
+  justify-content: center;
+  padding: clamp(8px, 1.5vh, 12px) clamp(12px, 2vw, 18px);
+  font-size: clamp(12px, 1.5vw, 14px);
+  border-radius: clamp(10px, 3vh, 20px);
+  transition: 0.3s;
 }
 
-.product_button:hover {
-  transition: 0.3s;
-  padding: 11px 18px;
-  background: #333333;
-  color: #ffffff;
-  border-style: none;
+.product_button_save {
+  background: #e2ffe3;
+  color: #333333;
+}
+
+.product_button_delete {
+  background: #ffe2e2;
+  color: #333333;
+}
+
+.product_button_save:hover {
+  background: #b4deb6;
+  transform: scale(1);
+}
+
+.product_button_delete:hover {
+  background: #cca2a2;
+  transform: scale(1);
 }
 
 .product_buttons {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .sizes {
@@ -130,4 +124,17 @@
   font-weight: 600;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .product_buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .product_button_save,
+  .product_button_delete {
+    width: 100%;
+    padding: 10px;
+  }
 }
