@@ -62,6 +62,7 @@ export default function ProductItem({
   const [supplierId, setSupplierId] = React.useState(
     product.supplier?.supplier_id?.toString() || ""
   );
+  const [showSizes, setShowSizes] = React.useState(false);
 
   const handleSubmit = async () => {
     try {
@@ -114,7 +115,7 @@ export default function ProductItem({
   };
 
   return (
-    <div>
+    <div className={styles.product}>
       <div className={styles.product_item}>
         <h1>{product.product_id}</h1>
         <input
@@ -189,6 +190,36 @@ export default function ProductItem({
             Удалить
           </button>
         </div>
+      </div>
+      <div className={styles.sizes_container}>
+        <button
+          onClick={() => setShowSizes(!showSizes)}
+          className={styles.sizes_toggle}
+        >
+          Размеры ({product.sizes?.length || 0})
+        </button>
+
+        {showSizes && (
+          <div className={styles.sizes_popup}>
+            <div className={styles.sizes_header}>
+              <h4>Доступные размеры</h4>
+              <button
+                onClick={() => setShowSizes(false)}
+                className={styles.sizes_cancel}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className={styles.sizes_list}>
+              {product.sizes?.map((size) => (
+                <div key={size.product_id} className={styles.size_item}>
+                  <span>{size.size}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
