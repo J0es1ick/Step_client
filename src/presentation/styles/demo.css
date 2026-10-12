@@ -1,0 +1,48 @@
+.demo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px max(18px, 4vw);
+  background: #dcecbd;
+  border-bottom: 1px solid var(--ink);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.demo-banner strong {
+  margin-right: 12px;
+  font-weight: 900;
+}
+.demo-banner > div {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.demo-banner button {
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: 20px;
+  padding: 6px 10px;
+  font: inherit;
+  cursor: pointer;
+}
+.demo-banner button:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 3px;
+}
+.demo-access {
+  display: grid;
+  gap: 12px;
+}
+.demo-access p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+@media (max-width: 760px) {
+  .demo-banner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 10px;
+  }
+}

@@ -1,20 +1,21 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, HashRouter } from "react-router-dom";
+import App from "./app/App";
+import { DemoShopGateway } from "./infrastructure/demo/demo-shop-gateway";
+import { HttpShopGateway } from "./infrastructure/http/http-shop-gateway";
+import { BrowserPreferences } from "./infrastructure/storage/browser-preferences";
 
-ReactDOM.render(
+const demo = process.env.REACT_APP_DEMO === "true";
+const preferences = new BrowserPreferences(demo ? "step-demo-" : "step-");
+const shop = demo ? new DemoShopGateway(preferences) : new HttpShopGateway();
+const Router = demo ? HashRouter : BrowserRouter;
+
+createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <Router>
+      <App shop={shop} preferences={preferences} />
+    </Router>
   </React.StrictMode>,
-  document.getElementById("root")
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

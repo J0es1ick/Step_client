@@ -1,0 +1,51 @@
+# Визуалы STEP
+
+`step-hero.png` создан встроенным инструментом Imagegen для этого проекта. Это иллюстрация демонстрационной коллекции, а не фотография реального товара. Файл сохранён в репозитории и не зависит от каталога генератора.
+
+Промпт: «Use case: product-mockup. Asset type: hero editorial photograph for a premium friendly Russian footwear and casual clothing ecommerce brand named STEP. Create a very high quality realistic fashion footwear still life, landscape 3:2 composition. A pair of elegant contemporary low top retro running sneakers in ivory cream suede, pale sage green panels and forest green detailing, unbranded, realistically constructed with cream laces, fine mesh, slightly chunky off-white sole. One sneaker on a light warm beige stone block in foreground pointing left, second sneaker resting at angle behind on another low block. Background is soft solid sage gray-green studio wall, bright soft natural sunlight from upper right creates sophisticated real shadows. Large sneakers fill composition, fashion magazine art direction, tactile suede, refined not sporty aggressive, warm peaceful mood, beautiful sculptural composition. Color palette muted sage green, cream, warm sand, forest green accents. No text, no letters, no watermarks, no recognizable brand logos. Entire image is photography only. Product fully inside image with breathing room.»
+
+Демонстрационные фотографии остальных вещей и образа загружаются с Unsplash. Ссылки перечислены в `src/infrastructure/seed/catalog.ts` сервера и `src/infrastructure/demo/catalog.ts` клиента. Названия и характеристики демонстрационных товаров условные; перед продажами нужны собственные фотографии и точные данные. Если изображение товара не загрузится, показывается `product-placeholder.svg`.
+
+## Редизайн по референсу
+
+Композиция вдохновлена публичным превью [Pinterest](https://ru.pinterest.com/pin/11047961583229647/): светлый фон, контурная типографика категорий, парящая обувь, размытые боковые силуэты. Изображение референса в сайт не встроено.
+
+`step-floating.png` — прозрачный cutout, созданный встроенным Imagegen в режиме редактирования `step-hero.png`, `transparent_background: true`. Исходное изображение сохранено без изменений. Это художественная иллюстрация демонстрационного товара.
+
+Промпт: «Use case: product-mockup. Edit the supplied STEP sneaker product photo into a luxury fashion ecommerce hero cutout. Preserve the exact ivory, pale sage green and forest green footwear design and realistic materials. Remove the entire backdrop, stone blocks and any ground. Show TWO of these sneakers as a beautifully balanced floating sculptural arrangement in midair, one in foreground diagonal from upper left to lower right, second behind it turned to reveal its chunky ivory sole and pointing diagonally up. Both entire shoes fully visible, crossing subtly but each silhouette distinct, dimensional dynamic fashion art direction. Large central composition occupying 85% of the canvas. Photorealistic tactile cream suede, pale sage panels, mesh, laces and dark green details, crisp editorial studio lighting with soft shadows on the shoes only. Transparent background, no background shadow, no surface, no text, no logos, no watermark. Output portrait 3:4 or square, substantial shoes with clear edge definition; assets will float on an off-white webpage.»
+
+## Интерактивная круговая витрина
+
+`step-orbit-collection.png` создан встроенным Imagegen как новая иллюстрация, `transparent_background: true`. Это прозрачный атлас из шести демонстрационных предметов. CSS использует отдельные ячейки без изменения оригинала. У демонстрационного Retro Court используется белый силуэт из первой ячейки; точные фотографии остаются в карточке товара. Для настоящего каталога нужны собственные PNG/WebP с прозрачным фоном. Редактирование фотографий товара в админке автоматически отключает соответствующую демонстрационную иллюстрацию витрины.
+
+Промпт: «Use case: product-mockup. Create one clean product cutout SPRITE SHEET for a premium fashion ecommerce 3D carousel. Transparent background. Landscape canvas with EXACTLY 3 equal columns and 2 equal rows, six separate cells in a perfectly aligned regular grid, no visible cell dividers. Each product isolated fully within its own cell, no overlap, all items centered at the exact center of its respective cell, each item occupies around 75% of its cell width and 75% of its cell height with generous transparent margins. TOP LEFT: single unbranded ivory-white minimalist leather low-top sneaker, subtle grey sole, side three-quarter view toe points right, slightly tilted as floating. TOP CENTER: single tan caramel leather casual shoe / low sneaker with off-white chunky sole, toe points left, three-quarter floating view. TOP RIGHT: single vivid coral-red athletic running sneaker, red breathable mesh upper and white thick cushioned sole, toe points right, side three-quarter floating view. BOTTOM LEFT: minimalist sage-grey pullover hoodie, front view, realistic draping sleeves and hood, soft heavyweight cotton, invisible mannequin, no human. BOTTOM CENTER: simple premium plain white crewneck short sleeve T-shirt, front view with realistic natural fabric drape, no person. BOTTOM RIGHT: premium compact black/charcoal nylon city backpack with top handle, front pocket and subtle silver zippers, three-quarter front view, black straps. Consistent luxury product photography, soft neutral studio light, lifelike detailed materials, elegant sculptural silhouettes. No brand logos, no emblems, no text, no letters, no price tags, no extra objects, no background, no ground, no cast shadow outside the objects. Every cell fully transparent around its one object. Six different objects, exactly as ordered. High resolution polished ecommerce product assets.»
+
+## Галерея Everyday Runner
+
+`step-top-view.png` — дополнительный ракурс демонстрационного кроссовка, создан Imagegen 2026-10-10 на основе локального `step-hero.png`. Исходник генератора сохранён без изменений: `exec-0f7717b3-dd8e-40f9-9ec2-d291c238d662.png`. Изображение непрозрачное, фон тёплый молочный. Это иллюстрация вымышленного товара.
+
+Промпт: «Create one new product gallery photograph of the EXACT SAME unbranded cream and sage green retro running sneaker in the reference. Preserve its materials, construction and color blocking: pale sage suede overlays, off-white knit mesh, dark forest green geometric side panels, off-white foam midsole and sage rubber outsole, cream laces. A single shoe seen from above at a gentle diagonal, toe pointing toward bottom-left, heel toward upper-right, full shoe visible with comfortable margins, on a clean warm ivory studio background. Soft directional natural light, subtle realistic contact shadow. Premium minimalist editorial ecommerce flat lay, high detail in suede, mesh and stitching. Portrait 4:5 composition. No text, no logos, no decorative objects, no frame. This is another view for an existing fictional demo product; product identity must match reference.»
+
+Галерея исходного демотовара `sage-runner` объединяет `step-floating.png`, `step-hero.png` и `step-top-view.png`. Функция `productPhotos` использует этот набор только для неизменённого демотовара с единственным исходным изображением. Загруженные администратором фотографии и многостраничные галереи имеют приоритет.
+
+## Иллюстрированный стиль по референсам пользователя — 2026-10-10
+
+`step-your-move.png` — оригинальная рисованная надпись «ТВОЙ ХОД», созданная Imagegen на прозрачном фоне для главной страницы. Две строки объёмных округлых кириллических букв, фиолетовая и зелёная заливки, чёрный контур и белая обводка стикера. Исходник сохранён без изменений: `exec-efc712b9-2d3d-4dbf-893b-da7a9e4a050c.png`.
+
+Прежний персонаж-кроссовок заменён граффити «БЕЗ РАМОК» 2026-10-12 и исключён из публичных файлов. При рефакторинге рабочая копия сохранена локально в `artifacts/retired-client/step-mascot.png` (не входит в Git). Исходник Imagegen: `exec-72d8e299-3601-4b19-8fd6-8454c6762991.png`.
+
+Изображения сгенерированы по описанию. Скриншоты референсов, их логотипы и чужие персонажи в сайт не включены. Используемые рабочие копии находятся рядом с этим файлом.
+
+## Граффити вместо персонажа — 2026-10-12
+
+`step-graffiti.png` — прозрачная рисованная надпись «БЕЗ РАМОК» для блока «Больше тебя». Создана встроенным Imagegen (новая генерация, `transparent_background: true`). Чёрные штрихи сухой кисти, молочный контур, зелёные и фиолетовые детали. Сохранена в `public/media/step-graffiti.png`; исходник генератора — `exec-c2edcb44-dc12-4f0b-b064-5a895664e201.png`. Реакция на наведение выполнена в CSS и отключается при уменьшении движения.
+
+Промпт:
+
+```text
+Use case: logo-brand. Asset type: transparent cutout hand-painted typographic graffiti for an independent streetwear store, replacing a cartoon sneaker mascot.
+Create a confident, authentic hand-lettered graffiti composition with the exact Russian Cyrillic words "БЕЗ РАМОК", on two stacked lines: "БЕЗ" above "РАМОК". Spell precisely Б Е З / Р А М О К, every letter clear. This means "without boundaries".
+Style: expressive broad chisel marker and dry brush strokes, slightly irregular baselines, bespoke angular lettering by a real street artist, raw but highly legible, mature skate zine/screenprint aesthetic. Not a typeset font. Strong composition, text occupies almost all the graphic, five percent clear margin. Compact roughly square composition suitable for a website panel.
+Palette strictly near-black #1b1d19 thick letter shapes, warm ivory #fffdf6 thin hand-painted outline to separate from lavender website background, small acid-sage green #a9d875 fill accents or underlines, very limited muted purple #7550ae offset ink. Flat spot ink. Sparse dry-brush texture within strokes and one fast sweeping underline with an arrow tip; perhaps two small energetic ink marks. Authentic print grain, no messy background splatter.
+Actual transparent background, no paper rectangle, no wall, no mockup. No characters, mascots, shoes, faces, hands, eyes. No glossy balloon letters, no 3D bevel, no gradients, no digital glow, no soft shadows, no random extra text or logos. Purposeful handmade imperfection, not clutter. Only exact text "БЕЗ РАМОК".
+```

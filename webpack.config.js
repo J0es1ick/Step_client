@@ -1,93 +1,64 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-
-const { NODE_ENV, SERVER_HOST, SERVER_PORT, SERVER_WEB_HOST, SERVER_WEB_PORT } =
-  process.env;
-
-const proxy = `http://${SERVER_HOST}:${SERVER_PORT}`;
-console.log(proxy);
-
-module.exports = {
-  mode: NODE_ENV || "production",
-  entry: "./src/index.tsx",
-  devtool: NODE_ENV !== "production" ? "inline-source-map" : "",
-  output: {
-    publicPath: "/",
-    filename: "bundle.js",
-    path: path.resolve(__dirname, "dist"),
-  },
-
-  resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json"],
-  },
-
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: [
-          {
+const { DefinePlugin } = require("webpack");
+require("dotenv").config();
+module.exports = (env = {}, argv = {}) => {
+  const demo = env.demo === true || env.demo === "true";
+  const basePath = "/" + String(env.base || "").replace(/^\/+|\/+$/g, "") + "/";
+  const base = basePath === "//" ? "/" : basePath;
+  return {
+    mode: argv.mode || "production",
+    entry: "./src/index.tsx",
+    devtool: argv.mode === "development" ? "eval-source-map" : false,
+    output: {
+      publicPath: base,
+      filename: "assets/[name].[contenthash:8].js",
+      path: path.resolve(__dirname, "dist"),
+      clean: true,
+    },
+    resolve: { extensions: [".ts", ".tsx", ".js", ".json"] },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: {
             loader: "ts-loader",
-            options: {
-              compilerOptions: { noEmit: false },
-            },
+            options: { compilerOptions: { noEmit: false } },
           },
-        ],
-        exclude: /node_modules/,
-      },
-      {
-        test: /\.(css|s[ac]ss)$/i,
-        use: [
-          { loader: "style-loader" },
-          {
-            loader: "css-loader",
-            options: {
-              importLoaders: 1,
-              // modules: true
-            },
-          },
-          "sass-loader",
-        ],
-      },
-      {
-        test: /\.(png|jpe?g|gif|svg$)$/i,
-        use: [
-          {
-            loader: "file-loader",
-          },
-        ],
-      },
+          exclude: /node_modules/,
+        },
+        { test: /\.css$/, use: ["style-loader", "css-loader"] },
+        { test: /\.(png|jpe?g|gif|svg|webp)$/i, type: "asset/resource" },
+      ],
+    },
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: "./public/index.html",
+        basePath: base,
+      }),
+      new DefinePlugin({
+        "process.env.REACT_APP_DEMO": JSON.stringify(String(demo)),
+        "process.env.PUBLIC_URL": JSON.stringify(
+          base === "/" ? "" : base.replace(/\/$/, ""),
+        ),
+      }),
     ],
-  },
-
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "./public/index.html",
-      favicon: "./public/favicon.ico",
-      filename: "index.html",
-      inject: "body",
-      hash: true,
-    }),
-  ],
-
-  devServer: {
-    allowedHosts: ["localhost", SERVER_HOST],
-    historyApiFallback: true,
-    open: true,
-    hot: true,
-    host: SERVER_WEB_HOST,
-    port: SERVER_WEB_PORT,
-
-    proxy: [
-      {
-        context: ["/api", "/acc", "/auth", "/images"],
-        target: proxy,
-      },
-      {
-        context: ["/socket.io"],
-        target: proxy,
-        ws: true,
-      },
-    ],
-  },
+    performance: { hints: false },
+    devServer: {
+      host: process.env.STORE_WEB_HOST || "127.0.0.1",
+      port: process.env.STORE_WEB_PORT || 5180,
+      historyApiFallback: true,
+      open: false,
+      hot: true,
+      static: { directory: path.resolve(__dirname, "public") },
+      proxy: demo
+        ? []
+        : [
+            {
+              context: ["/api"],
+              target: process.env.STORE_API_URL || "http://127.0.0.1:5200",
+            },
+          ],
+    },
+  };
 };

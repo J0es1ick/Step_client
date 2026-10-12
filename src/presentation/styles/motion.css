@@ -1,0 +1,331 @@
+/* Motion has three levels: one-time reveals, quiet idle moments, direct feedback. */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-playful: cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+/* Individual translate leaves each component's existing hover/rotation intact. */
+[data-motion="pending"] {
+  opacity: 0;
+  translate: 0 18px;
+}
+[data-motion="shown"] {
+  animation: step-reveal 650ms var(--ease-out) var(--reveal-delay, 0ms) both;
+}
+.product-card:not([data-motion="shown"]) {
+  animation: none;
+}
+@keyframes step-reveal {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+  to {
+    opacity: 1;
+    translate: none;
+  }
+}
+/* Only the small hero sticker has idle motion. Long rests keep it quiet. */
+.note-sticker {
+  transform-origin: 50% 24%;
+  animation: step-sticker-idle 9s ease-in-out infinite;
+  transition:
+    rotate 650ms var(--ease-playful),
+    scale 650ms var(--ease-playful);
+  pointer-events: auto;
+}
+@keyframes step-sticker-idle {
+  0%,
+  65%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  76% {
+    transform: translateY(-5px) rotate(-4deg);
+  }
+  86% {
+    transform: translateY(1px) rotate(2deg);
+  }
+  94% {
+    transform: translateY(0) rotate(-1deg);
+  }
+}
+[data-ambient]:not([data-motion-active="true"]) .note-sticker,
+[data-ambient-paused="true"] .note-sticker,
+.motion-paused .note-sticker {
+  animation-play-state: paused;
+}
+.hero-lettering {
+  pointer-events: auto;
+  transition:
+    rotate 700ms var(--ease-playful),
+    scale 700ms var(--ease-playful);
+}
+.hero-handnote {
+  transition: color 0.3s;
+}
+/* Flat graffiti stays readable; a small tilt makes the printed mark feel tactile. */
+.story-illustration .graffiti-artwork {
+  z-index: 2;
+  transform: rotate(-4deg);
+  transition: transform 700ms var(--ease-playful);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.story-spark {
+  pointer-events: none;
+  transition:
+    rotate 800ms var(--ease-playful),
+    scale 800ms var(--ease-playful);
+}
+.story-orbit {
+  transition: rotate 900ms var(--ease-out);
+}
+.story-stamp {
+  transition: rotate 650ms var(--ease-playful);
+}
+/* Clear feedback on the same controls throughout the shop. */
+.button > svg:last-child,
+.text-link > svg,
+.showcase-cta > svg,
+.category-label svg,
+.footer-sticker > svg,
+.service-row a > svg,
+.footer-callout a > svg {
+  transition: translate 0.35s var(--ease-out);
+}
+.badge,
+.gallery-badge,
+.catalog-count,
+.page-heading .eyebrow {
+  transition:
+    rotate 0.6s var(--ease-playful),
+    translate 0.6s var(--ease-playful);
+}
+.category-doodle,
+.mood-strip i {
+  transition:
+    rotate 0.75s var(--ease-out),
+    scale 0.65s var(--ease-playful);
+}
+.category-label > span {
+  transition:
+    background 0.3s,
+    rotate 0.5s var(--ease-playful);
+}
+.service-row > div {
+  transition:
+    translate 0.45s var(--ease-out),
+    box-shadow 0.45s;
+}
+.service-row > div > span {
+  transition:
+    rotate 0.65s var(--ease-playful),
+    scale 0.65s var(--ease-playful);
+}
+.header-actions .icon-button svg,
+.bag-button > svg,
+.favorite-button svg,
+.save-product svg {
+  transition:
+    rotate 0.45s var(--ease-playful),
+    scale 0.4s var(--ease-playful);
+}
+.favorite-button.is-favorite svg,
+.save-product.is-favorite svg {
+  animation: step-heart 0.45s var(--ease-out);
+}
+.footer-sticker {
+  transition:
+    transform 0.55s var(--ease-playful),
+    box-shadow 0.4s;
+}
+.account-nav > button,
+.account-nav > a {
+  transition:
+    background 0.25s,
+    box-shadow 0.25s,
+    translate 0.3s var(--ease-out);
+}
+@keyframes step-heart {
+  0%,
+  100% {
+    scale: 1;
+  }
+  40% {
+    scale: 1.24;
+    rotate: -9deg;
+  }
+  70% {
+    scale: 0.95;
+    rotate: 4deg;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .note-sticker:hover {
+    rotate: -8deg;
+    scale: 1.06;
+  }
+  .hero-lettering:hover {
+    rotate: 2deg;
+    scale: 1.025;
+  }
+  .graffiti-mark:hover .graffiti-artwork {
+    transform: translateY(-5px) rotate(-1deg);
+  }
+  .graffiti-mark:hover .story-orbit {
+    rotate: 4deg;
+  }
+  .style-story:hover .spark-one {
+    rotate: 30deg;
+    scale: 1.08;
+  }
+  .style-story:hover .spark-two {
+    rotate: -25deg;
+    scale: 0.92;
+  }
+  .style-story:hover .story-stamp {
+    rotate: -6deg;
+  }
+  .mood-category:hover .category-doodle {
+    rotate: 65deg;
+    scale: 1.08;
+  }
+  .mood-category:hover .category-label > span {
+    background: var(--green);
+    rotate: -9deg;
+  }
+  .mood-category:hover .category-label svg {
+    translate: 2px 0;
+  }
+  .product-card:hover {
+    transform: translateY(-5px) rotate(-0.35deg);
+  }
+  .product-card:hover .badge {
+    rotate: 6deg;
+    translate: 0 -2px;
+  }
+  .product-gallery:hover .gallery-badge {
+    rotate: -6deg;
+    translate: 0 -2px;
+  }
+  .page-heading:hover .catalog-count {
+    rotate: -6deg;
+  }
+  .page-heading:hover .eyebrow {
+    rotate: 2deg;
+  }
+  .service-row > div:hover {
+    translate: 0 -4px;
+    box-shadow: 4px 5px 0 #1b1d191c;
+  }
+  .service-row > div:hover > span {
+    rotate: 14deg;
+    scale: 1.06;
+  }
+  .button:hover > svg:last-child,
+  .text-link:hover > svg,
+  .showcase-cta:hover > svg,
+  .service-row a:hover > svg,
+  .footer-callout a:hover > svg {
+    translate: 3px 0;
+  }
+  .header-actions .icon-button:hover svg,
+  .bag-button:hover > svg {
+    rotate: -8deg;
+    scale: 1.08;
+  }
+  .favorite-button:hover svg,
+  .save-product:hover svg {
+    scale: 1.12;
+  }
+  .account-nav > button:hover,
+  .account-nav > a:hover {
+    translate: 3px 0;
+  }
+  .footer-sticker:hover {
+    transform: rotate(-7deg) translateY(-3px);
+    box-shadow: 6px 7px 0 var(--ink);
+  }
+  .footer-sticker:hover > svg {
+    translate: 2px -2px;
+  }
+  .mood-strip:hover i {
+    rotate: 90deg;
+  }
+}
+/* Keyboard and touch get feedback without relying on hover. */
+.product-card:focus-within {
+  border-color: var(--ink);
+  box-shadow: 4px 5px 0 #b9a0ea85;
+}
+.mood-category:focus-visible .category-label > span {
+  background: var(--green);
+}
+.button:focus-visible > svg:last-child,
+.text-link:focus-visible > svg {
+  translate: 3px 0;
+}
+.mood-category:active,
+.product-card:active {
+  scale: 0.993;
+}
+.orbit-arrow:active,
+.gallery-arrows button:active,
+.favorite-button:active,
+.save-product:active {
+  scale: 0.94;
+}
+.mood-category,
+.product-card,
+.orbit-arrow,
+.gallery-arrows button,
+.favorite-button,
+.save-product {
+  transition-property: transform, background, border-color, box-shadow, scale;
+}
+@media (max-width: 760px) {
+  [data-motion="shown"] {
+    animation-duration: 520ms;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-motion="pending"],
+  [data-motion="shown"] {
+    opacity: 1;
+    translate: none;
+    animation: none;
+  }
+  .note-sticker,
+  .hero-lettering,
+  .story-illustration .graffiti-artwork,
+  .story-orbit,
+  .story-spark,
+  .story-stamp,
+  .badge,
+  .gallery-badge,
+  .catalog-count,
+  .category-doodle,
+  .mood-strip i,
+  .service-row > div,
+  .service-row > div > span,
+  .account-nav > button,
+  .account-nav > a {
+    animation: none;
+    transition: none;
+    translate: none;
+    rotate: none;
+    scale: none;
+  }
+  .product-card:hover,
+  .mood-category:hover,
+  .footer-sticker:hover {
+    transform: none;
+  }
+  .button:hover,
+  .button:active,
+  .button:focus-visible > svg,
+  .text-link:focus-visible > svg {
+    transform: none;
+    translate: none;
+  }
+}
