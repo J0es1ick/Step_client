@@ -126,9 +126,14 @@ export function StoreProvider({
     }
   };
   const setQuantity = (id: string, size: string, quantity: number) => {
+    if (!Number.isInteger(quantity) || quantity < 0) return;
     const product = products.find((p) => p.id === id);
+    const previous = cart.find(
+      (line) => line.productId === id && line.size === size,
+    );
+    if (!previous) return;
     if (
-      quantity > 0 &&
+      quantity > previous.quantity &&
       (!product || quantity > Math.min(product.stock[size] || 0, 20))
     ) {
       notify("Больше нет в наличии");

@@ -7,7 +7,7 @@ import { Product } from "../domain/models";
 import { HttpShopGateway } from "../infrastructure/http/http-shop-gateway";
 import { BrowserPreferences } from "../infrastructure/storage/browser-preferences";
 import { ProductDetails } from "./pages/Product";
-import { StoreProvider } from "./state/StoreProvider";
+import { StoreProvider, useStore } from "./state/StoreProvider";
 
 import ProductGallery, { productPhotos } from "./components/ProductGallery";
 import Showcase, { OrbitCollection } from "./components/Showcase";
@@ -16,6 +16,7 @@ import Admin from "./pages/Admin";
 
 const product: Product = {
   id: "test",
+  version: 0,
   name: "Test Runner",
   brand: "STEP",
   category: "sneakers",
@@ -52,9 +53,7 @@ beforeEach(() => {
 });
 afterEach(() => jest.restoreAllMocks());
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <MemoryRouter
-    future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-  >
+  <MemoryRouter>
     <StoreProvider
       shop={new HttpShopGateway()}
       preferences={new BrowserPreferences()}
@@ -116,6 +115,41 @@ test("requires an available size, persists cart, and caps quantity at stock", as
   fireEvent.click(screen.getByRole("button", { name: "Добавлено в корзину" }));
   fireEvent.click(screen.getByRole("button", { name: "Добавлено в корзину" }));
   expect(JSON.parse(localStorage.getItem("step-cart-v1")!)[0].quantity).toBe(2);
+});
+
+test("a stale cart can be reduced below its saved quantity while increases still respect stock", async () => {
+  localStorage.setItem(
+    "step-cart-v1",
+    JSON.stringify([{ productId: "test", size: "39", quantity: 5 }]),
+  );
+  function Controls() {
+    const { cart, loading, setQuantity } = useStore();
+    if (loading) return null;
+    const quantity = cart[0]?.quantity ?? 0;
+    return (
+      <>
+        <output aria-label="Quantity">{quantity}</output>
+        <button onClick={() => setQuantity("test", "39", quantity - 1)}>
+          Minus
+        </button>
+        <button onClick={() => setQuantity("test", "39", quantity + 1)}>
+          Plus
+        </button>
+      </>
+    );
+  }
+  render(<Controls />, { wrapper });
+  await screen.findByRole("button", { name: "Minus" });
+  fireEvent.click(screen.getByRole("button", { name: "Minus" }));
+  expect(screen.getByLabelText("Quantity")).toHaveTextContent("4");
+  fireEvent.click(screen.getByRole("button", { name: "Plus" }));
+  expect(screen.getByLabelText("Quantity")).toHaveTextContent("4");
+  fireEvent.click(screen.getByRole("button", { name: "Minus" }));
+  fireEvent.click(screen.getByRole("button", { name: "Minus" }));
+  expect(screen.getByLabelText("Quantity")).toHaveTextContent("2");
+  fireEvent.click(screen.getByRole("button", { name: "Minus" }));
+  fireEvent.click(screen.getByRole("button", { name: "Minus" }));
+  expect(screen.getByLabelText("Quantity")).toHaveTextContent("0");
 });
 
 test("gallery wraps in both directions, switches thumbnails and resets zoom for a new photograph", () => {
@@ -218,9 +252,7 @@ test("hides admin operations when not authenticated", async () => {
 test("orbit navigation wraps and keeps title, price, product link and preview in sync", () => {
   const preview = jest.fn();
   render(
-    <MemoryRouter
-      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-    >
+    <MemoryRouter>
       <OrbitCollection
         products={[product, apparel]}
         motion={false}
@@ -260,9 +292,7 @@ test("orbit navigation wraps and keeps title, price, product link and preview in
 test("collection link focuses the section without replacing the demo route hash", () => {
   const scroll = jest.fn();
   render(
-    <MemoryRouter
-      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-    >
+    <MemoryRouter>
       <OrbitCollection
         products={[product]}
         motion={false}
