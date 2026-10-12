@@ -1,70 +1,108 @@
-# Getting Started with Create React App
+# STEP — вещи в твоём ритме
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Пет-проект для души: вымышленный магазин обуви и одежды с живой круговой витриной, зелёно-фиолетовой графикой и спокойными анимациями. Это площадка для экспериментов с интерфейсами и архитектурой, а не сервис реальных продаж.
 
-## Available Scripts
+**React 18 · TypeScript · Webpack · Clean Architecture**
 
-In the project directory, you can run:
+Два самостоятельных репозитория: этот фронтенд и [NestJS API](https://github.com/J0es1ick/shoes_store). Старые экраны админки заменены единым приложением; отдельной папки `storefront` нет.
 
-### `npm start`
+## Попробовать без сервера
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Нужен Node.js 22 или 24.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```sh
+npm ci
+npm run dev:demo
+```
 
-### `npm test`
+Откройте **http://127.0.0.1:5181**. Демо включает каталог, фильтры, галерею, размеры, корзину, избранное, оформление учебного заказа, кабинет и админку. Кнопка «Выбрать роль» открывает готовые профили без email и пароля. «Сбросить демо» возвращает исходные товары и очищает учебные изменения.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Состояние сохраняется только в браузере под отдельными ключами `step-demo-*`. Демо не обращается к API и не создаёт настоящих аккаунтов, платежей или заказов. Фотографии Unsplash и Google Fonts загружаются из внешних источников. Иллюстрации и описание их происхождения находятся в [public/media/ASSETS.md](public/media/ASSETS.md).
 
-### `npm run build`
+## GitHub Pages
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Workflow [.github/workflows/ci.yml](.github/workflows/ci.yml) проверяет оба режима и подготавливает статический артефакт. Для публикации в репозитории GitHub:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. В **Settings → Pages → Source** выберите **GitHub Actions**.
+2. В **Settings → Secrets and variables → Actions → Variables** добавьте `ENABLE_PAGES=true`.
+3. Запустите workflow вручную на основной ветке или отправьте следующий коммит в неё.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+После успешных проверок демо публикуется по адресу `https://J0es1ick.github.io/shoes_store_client/`. Само добавление workflow не публикует незапушенные локальные коммиты. Инструкции GitHub: [custom Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
-### `npm run eject`
+Путь по умолчанию вычисляется из имени репозитория. Для собственного домена или пользовательского сайта задайте Actions variable `DEMO_BASE_PATH=/`. Демо использует `HashRouter`, поэтому прямые ссылки вида `/shoes_store_client/#/product/sage-runner` работают после перезагрузки без серверного fallback. Статические изображения и favicon учитывают подпапку.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Проверка такой сборки локально (PowerShell):
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```powershell
+$env:DEMO_BASE_PATH = '/shoes_store_client/'
+npm run build:demo
+node scripts/check-demo-build.cjs
+npm run preview
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Откройте `http://127.0.0.1:5181/shoes_store_client/`. Для обычной корневой сборки удалите переменную или установите `/`.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Полная версия с API
 
-## Learn More
+Расположите репозитории рядом:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```text
+workspace/
+  shoes_store_client/
+  shoes_store_server/
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+В серверном репозитории выполните `npm ci` и `npm run start:local`. В этом репозитории:
 
-### Code Splitting
+```sh
+npm ci
+npm run dev
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Адрес: **http://127.0.0.1:5180**. Webpack проксирует `/api` на `127.0.0.1:5200`. Настройки — в [.env.example](.env.example). Локальный сервер создаёт каталог и администратора; его случайный пароль находится только в `.local/admin-credentials.txt` серверного репозитория.
 
-### Analyzing the Bundle Size
+С сервером доступны регистрация, cookie-сессия, профиль, история заказов и управление магазином по роли. Проверка доступа и окончательный расчёт цен/остатков происходят на сервере.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Docker
 
-### Making a Progressive Web App
+Нужны Docker и Compose v2. Только демо, без API и базы:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```sh
+docker compose -f compose.demo.yaml up --build -d
+```
 
-### Advanced Configuration
+Откройте **http://localhost:8080**. Остановка: `docker compose -f compose.demo.yaml down`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Полный стек **Nginx + API + PostgreSQL** описан в README бэкенда и запускается его `compose.yaml`. В нём можно изменить `CLIENT_PATH`, если клиент находится в другой папке. Dockerfile этого репозитория собирает статику в Node и раздаёт её через Nginx. `APP_MODE=demo` выбирает автономную сборку, по умолчанию собирается режим API.
 
-### Deployment
+## Структура
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```text
+src/
+  domain/           Модели и чистые правила корзины
+  application/      Сценарии фильтрации, переноса избранного и интерфейсы адаптеров
+  infrastructure/   HTTP, демо-данные и хранилище браузера
+  presentation/     React-страницы, компоненты, состояние, хуки и стили
+  app/              Маршруты и композиция UI
+  index.tsx         Выбор адаптера и роутера
+```
 
-### `npm run build` fails to minify
+Подробности и ограничения зависимостей — в [ARCHITECTURE.md](ARCHITECTURE.md). Внешние адаптеры реализуют `ShopGateway`; страницы не знают URL API и формат хранения. Демо и API используют один и тот же UI.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Проверки
+
+```sh
+npm run check       # ESLint, границы слоёв, TypeScript, Jest
+npm run build       # Обычная production-сборка в dist/
+npm run build:demo  # Статическое демо в dist/
+```
+
+CI запускает проверки на push и pull request, собирает оба режима и Docker-образ. Проверка демо дополнительно ловит неверные базовые пути, отсутствующие изображения и попадание HTTP-адаптера в демо-бандл. Публикация Pages возможна только из основной ветки и только после успешных проверок.
+
+CI также отклоняет high/critical замечания `npm audit` в runtime-зависимостях. После совместимых обновлений на 2026-10-12 у клиента остаются два moderate замечания React Router 6; переход на Router 7 требует отдельной миграции. Полный audit dev-инструментов не равен этой проверке: у Jest и сборочной цепочки остаются upstream-замечания.
+
+Тесты покрывают фильтры, корзину и размеры, галерею, физику карусели, reduced motion, роли и локальные заказы демо. Команда `npm run lint:fix` исправляет поддерживаемые ESLint замечания; обычный `lint` файлы не меняет.
+
+## Границы проекта
+
+Товары и условия магазина вымышлены. Онлайн-оплата, email/SMS, восстановление пароля и интеграции доставки не подключены. Предпросмотр — фотографии и увеличение, без виртуальной примерки. Файловый режим API предназначен для разработки, PostgreSQL — для Docker-развёртывания. Деплой в интернет требует собственных настроек домена и HTTPS.
