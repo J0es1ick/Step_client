@@ -4,7 +4,7 @@
 
 **React 18 · TypeScript · Webpack · Clean Architecture**
 
-Два самостоятельных репозитория: этот фронтенд и [NestJS API](https://github.com/J0es1ick/shoes_store). Старые экраны админки заменены единым приложением; отдельной папки `storefront` нет.
+Два самостоятельных репозитория: этот фронтенд и [NestJS API](https://github.com/J0es1ick/shoes_store). Старые экраны админки заменены единым приложением.
 
 ## Попробовать без сервера
 
