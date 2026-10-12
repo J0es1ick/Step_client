@@ -1,11 +1,16 @@
 import { Preferences } from "../../application/ports/preferences";
 import {
+  requireProductVersion,
+  validateStock,
+} from "../../application/product-edits";
+import {
   CheckoutInput,
   Credentials,
   ProductInput,
   ProfileInput,
   Registration,
   ShopGateway,
+  StockInput,
 } from "../../application/ports/shop-gateway";
 import { deliveryPrice, validCart } from "../../domain/cart";
 import { Order, OrderStatus, Product, User } from "../../domain/models";
@@ -70,17 +75,34 @@ function validSnapshot(value: unknown): boolean {
 /** Browser-only simulation. No credentials, API requests or real orders. */
 export class DemoShopGateway implements ShopGateway {
   private data: DemoData;
+  private observedSnapshot: string;
   constructor(private readonly preferences: Preferences) {
     this.data = preferences.read("snapshot-v1", initial(), validSnapshot);
+    this.observedSnapshot = JSON.stringify(this.data);
+    for (const product of this.data.products) product.version ??= 0;
   }
   private change<T>(operation: (data: DemoData) => T): T {
+    this.sync();
     const copy = clone(this.data);
     const result = operation(copy);
     this.data = copy;
     this.preferences.write("snapshot-v1", copy);
     return clone(result);
   }
+  private sync() {
+    const persisted = this.preferences.read(
+      "snapshot-v1",
+      this.data,
+      validSnapshot,
+    );
+    const serialized = JSON.stringify(persisted);
+    // An unchanged persisted copy must not undo in-memory edits if storage is full.
+    if (serialized !== this.observedSnapshot) this.data = persisted;
+    this.observedSnapshot = serialized;
+    for (const product of this.data.products) product.version ??= 0;
+  }
   private user(admin = false): User {
+    this.sync();
     const user = this.data.users.find((u) => u.id === this.data.userId);
     if (!user) throw new Error("Выберите демо-профиль для продолжения.");
     if (admin && user.role !== "admin")
@@ -100,9 +122,16 @@ export class DemoShopGateway implements ShopGateway {
       this.preferences.write("snapshot-v1", this.data);
     },
   };
-  catalog = async () => clone(this.data.products.filter((p) => p.active));
-  me = async () =>
-    clone(this.data.users.find((u) => u.id === this.data.userId) || null);
+  catalog = async () => {
+    this.sync();
+    return clone(this.data.products.filter((p) => p.active));
+  };
+  me = async () => {
+    this.sync();
+    return clone(
+      this.data.users.find((u) => u.id === this.data.userId) || null,
+    );
+  };
   login = async (_input: Credentials): Promise<User> => {
     throw new Error("В демо выберите готовый профиль. Пароль не нужен.");
   };
@@ -173,6 +202,7 @@ export class DemoShopGateway implements ShopGateway {
         )
           throw new Error("Недостаточно товара. Обновите корзину.");
         product.stock[line.size] -= line.quantity;
+        product.version++;
         return {
           ...line,
           name: product.name,
@@ -203,9 +233,11 @@ export class DemoShopGateway implements ShopGateway {
   private restore(data: DemoData, order: Order) {
     for (const item of order.items) {
       const product = data.products.find((p) => p.id === item.productId);
-      if (product)
+      if (product) {
         product.stock[item.size] =
           (product.stock[item.size] || 0) + item.quantity;
+        product.version++;
+      }
     }
   }
   cancelOrder = async (id: string) => {
@@ -233,22 +265,42 @@ export class DemoShopGateway implements ShopGateway {
       !input.name.trim() ||
       input.price < 1 ||
       !Number.isInteger(input.price) ||
-      !input.images.length ||
-      Object.values(input.stock).some((q) => !Number.isInteger(q) || q < 0)
+      !input.images.length
     )
       throw new Error("Проверьте название, цену, фото и остатки.");
     return this.change((data) => {
+      const { stock, expectedVersion, ...details } = input;
       if (id) {
         const product = data.products.find((p) => p.id === id);
         if (!product) throw new Error("Товар не найден.");
-        return Object.assign(product, input);
+        requireProductVersion(product, expectedVersion);
+        if (stock !== undefined)
+          throw new Error("Остатки изменяются отдельно от описания товара.");
+        Object.assign(product, details);
+        product.version++;
+        return product;
       }
+      validateStock(stock);
       const product: Product = {
-        ...input,
+        ...details,
+        stock,
+        version: 0,
         id: crypto.randomUUID(),
         createdAt: new Date().toISOString(),
       };
       data.products.push(product);
+      return product;
+    });
+  };
+  updateStock = async (id: string, input: StockInput) => {
+    this.user(true);
+    validateStock(input.stock);
+    return this.change((data) => {
+      const product = data.products.find((p) => p.id === id);
+      if (!product) throw new Error("Товар не найден.");
+      requireProductVersion(product, input.expectedVersion);
+      product.stock = { ...input.stock };
+      product.version++;
       return product;
     });
   };
@@ -258,6 +310,7 @@ export class DemoShopGateway implements ShopGateway {
       const product = data.products.find((p) => p.id === id);
       if (!product) throw new Error("Товар не найден.");
       product.active = false;
+      product.version++;
       return product;
     });
   };

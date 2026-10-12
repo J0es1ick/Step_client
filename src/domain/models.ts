@@ -1,6 +1,7 @@
 export type Category = "sneakers" | "shoes" | "clothing" | "accessories";
 export interface Product {
   id: string;
+  version: number;
   name: string;
   brand: string;
   category: Category;

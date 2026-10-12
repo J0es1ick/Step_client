@@ -7,7 +7,17 @@ import {
   User,
 } from "../../domain/models";
 
-export type ProductInput = Omit<Product, "id" | "createdAt">;
+export type ProductInput = Omit<
+  Product,
+  "id" | "createdAt" | "version" | "stock"
+> & {
+  stock?: Product["stock"];
+  expectedVersion?: number;
+};
+export interface StockInput {
+  stock: Product["stock"];
+  expectedVersion: number;
+}
 export type ProfileInput = Pick<User, "name" | "phone" | "address">;
 export interface Credentials {
   email: string;
@@ -42,6 +52,7 @@ export interface ShopGateway {
   cancelOrder(id: string): Promise<Order>;
   adminData(): Promise<AdminData>;
   saveProduct(input: ProductInput, id?: string): Promise<Product>;
+  updateStock(id: string, input: StockInput): Promise<Product>;
   archiveProduct(id: string): Promise<Product>;
   orderStatus(id: string, status: OrderStatus): Promise<Order>;
 }

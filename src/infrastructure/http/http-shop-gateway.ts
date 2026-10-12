@@ -5,6 +5,7 @@ import {
   ProfileInput,
   Registration,
   ShopGateway,
+  StockInput,
 } from "../../application/ports/shop-gateway";
 import {
   AdminData,
@@ -46,6 +47,11 @@ export class HttpShopGateway implements ShopGateway {
   archiveProduct = (id: string) =>
     api<Product>(`/admin/products/${encodeURIComponent(id)}`, {
       method: "DELETE",
+    });
+  updateStock = (id: string, input: StockInput) =>
+    api<Product>(`/admin/products/${encodeURIComponent(id)}/stock`, {
+      method: "PATCH",
+      body: body(input),
     });
   orderStatus = (id: string, status: OrderStatus) =>
     api<Order>(`/admin/orders/${encodeURIComponent(id)}`, {

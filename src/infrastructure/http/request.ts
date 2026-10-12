@@ -16,7 +16,8 @@ export async function api<T>(
       const message = Array.isArray(data.message)
         ? "Проверьте заполнение полей. Некоторые значения не соответствуют формату."
         : data.message;
-      throw new Error(
+      const ErrorType = response.status === 409 ? ShopConflictError : Error;
+      throw new ErrorType(
         message || "Не удалось выполнить запрос. Попробуйте ещё раз.",
       );
     }
@@ -35,3 +36,4 @@ export async function api<T>(
   }
 }
 export const body = (value: unknown) => JSON.stringify(value);
+import { ShopConflictError } from "../../application/errors";

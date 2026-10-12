@@ -19,6 +19,25 @@ beforeEach(() => {
     value: jest.fn(() => "a1234567-1234-4321-9999-012345678901"),
   });
 });
+afterEach(() => jest.restoreAllMocks());
+
+test("quota failures preserve successful edits and logout in memory", async () => {
+  const shop = new DemoShopGateway(new BrowserPreferences("step-demo-"));
+  await shop.preview.enter("admin");
+  const product = (await shop.adminData()).products[0];
+  jest.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    throw new DOMException("Full", "QuotaExceededError");
+  });
+  const saved = await shop.updateStock(product.id, {
+    stock: { ...product.stock, "40": 3 },
+    expectedVersion: product.version,
+  });
+  expect((await shop.catalog())[0]).toEqual(saved);
+  await shop.logout();
+  expect(await shop.me()).toBeNull();
+  await shop.preview.reset();
+  expect((await shop.catalog())[0].stock["40"]).toBe(8);
+});
 test("preview checkout never uses fetch, is idempotent and restores stock only once", async () => {
   const network = jest.fn();
   global.fetch = network;
@@ -70,4 +89,41 @@ test("invalid saved state falls back to the fictional catalog", async () => {
   expect(
     await new DemoShopGateway(new BrowserPreferences("step-demo-")).catalog(),
   ).toHaveLength(8);
+});
+
+test("stale demo edits cannot restore sold stock, including a second gateway instance", async () => {
+  const prefs = new BrowserPreferences("step-demo-");
+  const shop = new DemoShopGateway(prefs);
+  await shop.preview.enter("admin");
+  const { id, createdAt, version, stock, ...details } = (await shop.adminData())
+    .products[0];
+  const second = new DemoShopGateway(prefs);
+  await second.preview.enter("customer");
+  const order = await second.checkout(input());
+  await second.preview.enter("admin");
+  await expect(
+    shop.saveProduct({ ...details, expectedVersion: version }, id),
+  ).rejects.toThrow("Товар изменился");
+  await expect(
+    shop.updateStock(id, { stock, expectedVersion: version }),
+  ).rejects.toThrow("Товар изменился");
+  const current = (await shop.catalog())[0];
+  expect(current.stock["40"]).toBe(7);
+  const saved = await shop.saveProduct(
+    { ...details, name: "Updated", expectedVersion: current.version },
+    id,
+  );
+  expect(saved.stock["40"]).toBe(7);
+  const adjusted = await shop.updateStock(id, {
+    stock: { ...saved.stock, "40": 3 },
+    expectedVersion: saved.version,
+  });
+  expect(adjusted.version).toBe(saved.version + 1);
+  await shop.preview.enter("customer");
+  await shop.cancelOrder(order.id);
+  await shop.preview.enter("admin");
+  await expect(
+    shop.saveProduct({ ...details, expectedVersion: adjusted.version }, id),
+  ).rejects.toThrow("Товар изменился");
+  expect((await shop.catalog())[0].stock["40"]).toBe(4);
 });
