@@ -1060,10 +1060,30 @@ input[type="radio"] {
   border-bottom: 0;
 }
 .admin-table td > .icon-button,
-.admin-table .table-actions .icon-button {
+.admin-table .table-actions > button {
   border: 1px solid #b4c0a5;
   border-radius: 7px;
   background: var(--paper);
+}
+.admin-table .table-actions > button {
+  height: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
+  box-shadow: none;
+}
+.admin-table .table-actions .icon-button {
+  width: 44px;
+}
+.admin-table .table-actions .button {
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.admin-table .table-actions > button:hover:not(:disabled) {
+  background: var(--soft);
+  border-color: var(--accent);
+  transform: none;
+  box-shadow: none;
 }
 .admin-product img {
   border: 1px solid #c3cdb5;

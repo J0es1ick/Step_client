@@ -2293,7 +2293,8 @@ input[type="range"] {
 }
 .table-actions {
   display: flex;
-  gap: 3px;
+  align-items: center;
+  gap: 8px;
 }
 .admin-orders {
   display: flex;
